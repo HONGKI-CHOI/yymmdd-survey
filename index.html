@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>YYMMDD Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Sans+KR:wght@300;400&family=Noto+Sans+SC:wght@300;400&family=Noto+Sans+TC:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --dark: #1A1A18;
+    --gold: #B8975A;
+    --light-gold: #D4B483;
+    --gray: #8A8780;
+    --light-gray: #E8E4DC;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--cream);
+    color: var(--dark);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .screen {
+    display: none;
+    width: 100vw;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 32px 40px;
+    position: relative;
+    animation: fadeIn 0.4s ease;
+  }
+  .screen.active { display: flex; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .back-btn {
+    position: absolute;
+    top: 24px; left: 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    padding: 8px 4px;
+    transition: color 0.2s;
+    text-transform: uppercase;
+  }
+  .back-btn:active { color: var(--dark); }
+  .back-btn .arrow { font-size: 18px; line-height: 1; }
+
+  .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    margin-bottom: 36px;
+  }
+
+  /* 순환 도트 */
+  .lang-dots {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .lang-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--light-gray);
+    transition: background 0.4s;
+  }
+  .lang-dot.active { background: var(--gold); }
+
+  /* 타이틀 순환 */
+  .rotating-wrap {
+    position: relative;
+    width: 90%;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .rotating-line {
+    position: absolute;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 36px;
+    line-height: 1.3;
+    text-align: center;
+    color: var(--dark);
+    width: 100%;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  .rotating-line.visible { opacity: 1; transform: translateY(0); }
+
+  .divider {
+    width: 36px; height: 1px;
+    background: var(--gold);
+    margin: 0 auto 16px;
+  }
+
+  /* 서브타이틀 순환 */
+  .rotating-sub-wrap {
+    position: relative;
+    width: 90%;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .rotating-sub {
+    position: absolute;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--gray);
+    text-align: center;
+    line-height: 1.9;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  .rotating-sub.visible { opacity: 1; transform: translateY(0); }
+
+  .gift-badge-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 36px;
+  }
+  .gift-badge {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--dark);
+    color: var(--cream);
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 1px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .gift-badge.visible { opacity: 1; transform: translateY(0); }
+  .gift-badge span { color: var(--light-gold); }
+
+  .lang-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 380px;
+  }
+  .lang-btn {
+    background: white;
+    border: 1px solid var(--light-gray);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .lang-btn:active { background: var(--dark); border-color: var(--dark); color: var(--cream); }
+  .lang-btn .lang-name { font-size: 15px; font-weight: 400; display: block; margin-bottom: 3px; }
+  .lang-btn .lang-sub { font-size: 10px; color: var(--gray); letter-spacing: 1px; }
+  .lang-btn:active .lang-sub { color: var(--light-gold); }
+  .lang-btn.full-width { grid-column: 1 / -1; }
+
+  .question-header {
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .step-indicator {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .question-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--dark);
+  }
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 480px;
+  }
+  .option-btn {
+    background: white;
+    border: 1px solid var(--light-gray);
+    padding: 20px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--dark);
+    line-height: 1.5;
+  }
+  .option-btn .icon { font-size: 20px; display: block; margin-bottom: 6px; }
+  .option-btn:active, .option-btn.selected { background: var(--dark); border-color: var(--dark); color: var(--cream); }
+  .option-btn.full-width { grid-column: 1 / -1; }
+
+  .complete-icon { font-size: 44px; margin-bottom: 20px; }
+  .complete-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .complete-gift {
+    background: var(--dark);
+    color: var(--cream);
+    padding: 18px 40px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .complete-gift .gift-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--light-gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .complete-gift .gift-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 300;
+  }
+  .complete-sub {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--gray);
+    text-align: center;
+    line-height: 1.8;
+    margin-bottom: 28px;
+  }
+  .home-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--light-gray);
+    padding: 13px 36px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gray);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .home-btn:active { background: var(--light-gray); color: var(--dark); }
+
+  .saving-msg {
+    font-size: 11px;
+    color: var(--light-gold);
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    min-height: 18px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 메인 -->
+<div class="screen active" id="screen-main">
+  <div class="brand">Y Y M M D D</div>
+  <div class="lang-dots">
+    <div class="lang-dot active" id="dot-0"></div>
+    <div class="lang-dot" id="dot-1"></div>
+    <div class="lang-dot" id="dot-2"></div>
+    <div class="lang-dot" id="dot-3"></div>
+    <div class="lang-dot" id="dot-4"></div>
+  </div>
+  <div class="rotating-wrap">
+    <span class="rotating-line visible" id="rt-0">잠깐,<br>한 가지만 여쭤봐도<br>될까요?</span>
+    <span class="rotating-line" id="rt-1">请问您方便<br>回答一个问题吗？</span>
+    <span class="rotating-line" id="rt-2">請問您方便<br>回答一個問題嗎？</span>
+    <span class="rotating-line" id="rt-3">少しだけ<br>聞いてもいいですか？</span>
+    <span class="rotating-line" id="rt-4">May we ask you<br>one quick question?</span>
+  </div>
+  <div class="divider"></div>
+  <div class="rotating-sub-wrap">
+    <span class="rotating-sub visible" id="rs-0">간단한 설문에 참여해 주시면<br>소정의 선물을 드립니다</span>
+    <span class="rotating-sub" id="rs-1">参与简单问卷<br>即可获得小礼品</span>
+    <span class="rotating-sub" id="rs-2">參與簡單問卷<br>即可獲得小禮品</span>
+    <span class="rotating-sub" id="rs-3">簡単なアンケートに<br>ご参加いただくと、プレゼントを差し上げます</span>
+    <span class="rotating-sub" id="rs-4">Participate in a short survey<br>and receive a small gift</span>
+  </div>
+  <div class="gift-badge-wrap">
+    <div class="gift-badge visible" id="gb-0">🎁 <span>3,000원</span> 상당의 기프트백 증정</div>
+    <div class="gift-badge" id="gb-1">🎁 参与问卷，即可获得 <span>礼品袋</span></div>
+    <div class="gift-badge" id="gb-2">🎁 參與問卷，即可獲得 <span>禮品袋</span></div>
+    <div class="gift-badge" id="gb-3">🎁 アンケートで <span>ギフト</span> プレゼント</div>
+    <div class="gift-badge" id="gb-4">🎁 Complete survey · Receive a <span>gift bag</span></div>
+  </div>
+  <div class="lang-grid">
+    <button class="lang-btn" onclick="setLang('ko')">
+      <span class="lang-name">한국어</span><span class="lang-sub">KOREAN</span>
+    </button>
+    <button class="lang-btn" onclick="setLang('zh-cn')">
+      <span class="lang-name">简体中文</span><span class="lang-sub">CHINESE (S)</span>
+    </button>
+    <button class="lang-btn" onclick="setLang('zh-tw')">
+      <span class="lang-name">繁體中文</span><span class="lang-sub">CHINESE (T)</span>
+    </button>
+    <button class="lang-btn" onclick="setLang('ja')">
+      <span class="lang-name">日本語</span><span class="lang-sub">JAPANESE</span>
+    </button>
+    <button class="lang-btn full-width" onclick="setLang('en')">
+      <span class="lang-name">English</span><span class="lang-sub">ENGLISH</span>
+    </button>
+  </div>
+</div>
+
+<!-- Q1 -->
+<div class="screen" id="screen-q1">
+  <button class="back-btn" onclick="goBack('screen-main')"><span class="arrow">←</span> Back</button>
+  <div class="brand">Y Y M M D D</div>
+  <div class="question-header">
+    <div class="step-indicator">STEP 1 / 3</div>
+    <div class="question-text" id="q1-text"></div>
+  </div>
+  <div class="options-grid" id="q1-options"></div>
+</div>
+
+<!-- Q2 -->
+<div class="screen" id="screen-q2">
+  <button class="back-btn" onclick="goBack('screen-q1')"><span class="arrow">←</span> Back</button>
+  <div class="brand">Y Y M M D D</div>
+  <div class="question-header">
+    <div class="step-indicator">STEP 2 / 3</div>
+    <div class="question-text" id="q2-text"></div>
+  </div>
+  <div class="options-grid" id="q2-options"></div>
+</div>
+
+<!-- Q3 -->
+<div class="screen" id="screen-q3">
+  <button class="back-btn" onclick="goBack('screen-q2')"><span class="arrow">←</span> Back</button>
+  <div class="brand">Y Y M M D D</div>
+  <div class="question-header">
+    <div class="step-indicator">STEP 3 / 3</div>
+    <div class="question-text" id="q3-text"></div>
+  </div>
+  <div class="options-grid" id="q3-options"></div>
+</div>
+
+<!-- 완료 -->
+<div class="screen" id="screen-complete">
+  <div class="brand">Y Y M M D D</div>
+  <div class="complete-icon">🎁</div>
+  <h2 class="complete-title" id="complete-title"></h2>
+  <div class="divider"></div>
+  <div class="complete-gift">
+    <div class="gift-label">GIFT FOR YOU</div>
+    <div class="gift-value" id="complete-gift-text"></div>
+  </div>
+  <p class="complete-sub" id="complete-sub"></p>
+  <div class="saving-msg" id="saving-msg"></div>
+  <button class="home-btn" onclick="reset()">⌂ &nbsp;HOME</button>
+</div>
+
+<script>
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbycV5fE3ND1B3mYjFPhuvltRtpyDA4WPdhzVaJewHqu8HfVws0h_dtOxXJrJnGE7cxCVA/exec';
+
+const content = {
+  ko: {
+    q1: "어떻게 알고 오셨나요?",
+    q1options: [
+      { icon: "🚶", label: "지나가다 발견" },
+      { icon: "📱", label: "인스타그램" },
+      { icon: "🔍", label: "구글 검색" },
+      { icon: "👥", label: "지인 추천" },
+      { icon: "🗺️", label: "네이버 검색", full: true }
+    ],
+    q2: "누구와 함께 오셨나요?",
+    q2options: [
+      { icon: "🙋", label: "혼자" },
+      { icon: "👫", label: "연인" },
+      { icon: "👯", label: "친구" },
+      { icon: "👨‍👩‍👧", label: "가족" }
+    ],
+    q3: "제주 여행 며칠째이신가요?",
+    q3options: [
+      { icon: "✈️", label: "첫째 날" },
+      { icon: "🌤️", label: "둘째 날" },
+      { icon: "🌅", label: "마지막 날" },
+      { icon: "📅", label: "그 외" }
+    ],
+    complete: "참여해 주셔서<br>감사합니다",
+    gift: "기프트백을 받아가세요",
+    sub: "직원에게 이 화면을 보여주세요"
+  },
+  'zh-cn': {
+    q1: "您是怎么知道我们店的？",
+    q1options: [
+      { icon: "🚶", label: "路过发现" },
+      { icon: "📱", label: "小红书" },
+      { icon: "🗺️", label: "大众点评" },
+      { icon: "👥", label: "朋友推荐" },
+      { icon: "🔍", label: "搜索", full: true }
+    ],
+    q2: "您和谁一起来的？",
+    q2options: [
+      { icon: "🙋", label: "独自" },
+      { icon: "👫", label: "恋人" },
+      { icon: "👯", label: "朋友" },
+      { icon: "👨‍👩‍👧", label: "家人" }
+    ],
+    q3: "这是您济州旅行的第几天？",
+    q3options: [
+      { icon: "✈️", label: "第一天" },
+      { icon: "🌤️", label: "第二天" },
+      { icon: "🌅", label: "最后一天" },
+      { icon: "📅", label: "其他" }
+    ],
+    complete: "感谢您的参与",
+    gift: "请领取您的礼品袋",
+    sub: "请将此屏幕出示给店员"
+  },
+  'zh-tw': {
+    q1: "您是怎麼知道我們店的？",
+    q1options: [
+      { icon: "🚶", label: "路過發現" },
+      { icon: "📱", label: "Instagram" },
+      { icon: "🔍", label: "Google搜尋" },
+      { icon: "👥", label: "朋友推薦" },
+      { icon: "🗺️", label: "其他搜尋", full: true }
+    ],
+    q2: "您和誰一起來的？",
+    q2options: [
+      { icon: "🙋", label: "獨自" },
+      { icon: "👫", label: "戀人" },
+      { icon: "👯", label: "朋友" },
+      { icon: "👨‍👩‍👧", label: "家人" }
+    ],
+    q3: "這是您濟州旅行的第幾天？",
+    q3options: [
+      { icon: "✈️", label: "第一天" },
+      { icon: "🌤️", label: "第二天" },
+      { icon: "🌅", label: "最後一天" },
+      { icon: "📅", label: "其他" }
+    ],
+    complete: "感謝您的參與",
+    gift: "請領取您的禮品袋",
+    sub: "請將此畫面出示給店員"
+  },
+  ja: {
+    q1: "どこで知りましたか？",
+    q1options: [
+      { icon: "🚶", label: "通りがかり" },
+      { icon: "📱", label: "Instagram" },
+      { icon: "🔍", label: "Google検索" },
+      { icon: "👥", label: "知人の紹介" },
+      { icon: "🗺️", label: "その他検索", full: true }
+    ],
+    q2: "誰と一緒に来ましたか？",
+    q2options: [
+      { icon: "🙋", label: "一人" },
+      { icon: "👫", label: "恋人" },
+      { icon: "👯", label: "友人" },
+      { icon: "👨‍👩‍👧", label: "家族" }
+    ],
+    q3: "済州旅行の何日目ですか？",
+    q3options: [
+      { icon: "✈️", label: "1日目" },
+      { icon: "🌤️", label: "2日目" },
+      { icon: "🌅", label: "最終日" },
+      { icon: "📅", label: "その他" }
+    ],
+    complete: "ご参加<br>ありがとうございます",
+    gift: "ギフトバッグをお受け取りください",
+    sub: "このスクリーンをスタッフにお見せください"
+  },
+  en: {
+    q1: "How did you find us?",
+    q1options: [
+      { icon: "🚶", label: "Walked by" },
+      { icon: "📱", label: "Instagram" },
+      { icon: "🔍", label: "Google" },
+      { icon: "👥", label: "Recommendation" },
+      { icon: "🗺️", label: "Other search", full: true }
+    ],
+    q2: "Who are you with?",
+    q2options: [
+      { icon: "🙋", label: "Solo" },
+      { icon: "👫", label: "Partner" },
+      { icon: "👯", label: "Friends" },
+      { icon: "👨‍👩‍👧", label: "Family" }
+    ],
+    q3: "Which day of your Jeju trip?",
+    q3options: [
+      { icon: "✈️", label: "First day" },
+      { icon: "🌤️", label: "Second day" },
+      { icon: "🌅", label: "Last day" },
+      { icon: "📅", label: "Other" }
+    ],
+    complete: "Thank you for<br>your participation",
+    gift: "Please collect your gift bag",
+    sub: "Show this screen to our staff"
+  }
+};
+
+let currentLang = 'ko';
+let rotateInterval = null;
+let currentIndex = 0;
+const TOTAL = 5;
+let answers = { lang: '', q1: '', q2: '', q3: '' };
+
+function startRotation() {
+  stopRotation();
+  rotateInterval = setInterval(() => {
+    document.getElementById(`rt-${currentIndex}`).classList.remove('visible');
+    document.getElementById(`rs-${currentIndex}`).classList.remove('visible');
+    document.getElementById(`gb-${currentIndex}`).classList.remove('visible');
+    document.getElementById(`dot-${currentIndex}`).classList.remove('active');
+    currentIndex = (currentIndex + 1) % TOTAL;
+    document.getElementById(`rt-${currentIndex}`).classList.add('visible');
+    document.getElementById(`rs-${currentIndex}`).classList.add('visible');
+    document.getElementById(`gb-${currentIndex}`).classList.add('visible');
+    document.getElementById(`dot-${currentIndex}`).classList.add('active');
+  }, 2500);
+}
+
+function stopRotation() {
+  if (rotateInterval) { clearInterval(rotateInterval); rotateInterval = null; }
+}
+
+startRotation();
+
+const langLabels = {
+  'ko': '한국어', 'zh-cn': '简体中文', 'zh-tw': '繁體中文', 'ja': '日本語', 'en': 'English'
+};
+
+function setLang(lang) {
+  stopRotation();
+  currentLang = lang;
+  answers = { lang: langLabels[lang], q1: '', q2: '', q3: '' };
+
+  const fontMap = {
+    'ko': "'Noto Sans KR', sans-serif",
+    'zh-cn': "'Noto Sans SC', sans-serif",
+    'zh-tw': "'Noto Sans TC', sans-serif",
+    'ja': "'Noto Sans JP', sans-serif",
+    'en': "'Cormorant Garamond', serif"
+  };
+  document.body.style.fontFamily = fontMap[lang];
+
+  const c = content[lang];
+  document.getElementById('q1-text').textContent = c.q1;
+  buildOptions('q1-options', c.q1options, (val) => {
+    answers.q1 = val;
+    showScreen('screen-q2');
+  });
+  document.getElementById('q2-text').textContent = c.q2;
+  buildOptions('q2-options', c.q2options, (val) => {
+    answers.q2 = val;
+    showScreen('screen-q3');
+  });
+  document.getElementById('q3-text').textContent = c.q3;
+  buildOptions('q3-options', c.q3options, (val) => {
+    answers.q3 = val;
+    document.getElementById('complete-title').innerHTML = c.complete;
+    document.getElementById('complete-gift-text').textContent = c.gift;
+    document.getElementById('complete-sub').textContent = c.sub;
+    showScreen('screen-complete');
+    saveToSheet();
+  });
+
+  showScreen('screen-q1');
+}
+
+function buildOptions(containerId, options, onSelect) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (opt.full ? ' full-width' : '');
+    btn.innerHTML = `<span class="icon">${opt.icon}</span>${opt.label}`;
+    btn.onclick = () => {
+      btn.classList.add('selected');
+      setTimeout(() => onSelect(opt.label), 300);
+    };
+    container.appendChild(btn);
+  });
+}
+
+function saveToSheet() {
+  const msg = document.getElementById('saving-msg');
+  msg.textContent = '· · ·';
+  fetch(SHEET_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(answers)
+  }).then(() => {
+    msg.textContent = '✓ saved';
+  }).catch(() => {
+    msg.textContent = '';
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goBack(target) { showScreen(target); }
+
+function reset() {
+  for (let i = 0; i < TOTAL; i++) {
+    document.getElementById(`rt-${i}`).classList.remove('visible');
+    document.getElementById(`rs-${i}`).classList.remove('visible');
+    document.getElementById(`gb-${i}`).classList.remove('visible');
+    document.getElementById(`dot-${i}`).classList.remove('active');
+  }
+  currentIndex = 0;
+  document.getElementById('rt-0').classList.add('visible');
+  document.getElementById('rs-0').classList.add('visible');
+  document.getElementById('gb-0').classList.add('visible');
+  document.getElementById('dot-0').classList.add('active');
+  document.getElementById('saving-msg').textContent = '';
+  showScreen('screen-main');
+  startRotation();
+}
+</script>
+</body>
+</html>
