@@ -235,6 +235,60 @@
   .option-btn:active, .option-btn.selected { background: var(--dark); border-color: var(--dark); color: var(--cream); }
   .option-btn.full-width { grid-column: 1 / -1; }
 
+  /* Q4 전용 세로 리스트 스타일 */
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 480px;
+  }
+  .option-row {
+    background: white;
+    border: 1px solid var(--light-gray);
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--dark);
+    line-height: 1.5;
+    width: 100%;
+  }
+  .option-row .row-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--gold);
+    min-width: 22px;
+  }
+  .option-row .row-icon {
+    font-size: 20px;
+    min-width: 26px;
+    text-align: center;
+  }
+  .option-row .row-label {
+    flex: 1;
+  }
+  .option-row .row-sub {
+    display: block;
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .option-row:active, .option-row.selected {
+    background: var(--dark);
+    border-color: var(--dark);
+    color: var(--cream);
+  }
+  .option-row:active .row-num, .option-row.selected .row-num { color: var(--light-gold); }
+  .option-row:active .row-sub, .option-row.selected .row-sub { color: var(--light-gold); }
+
   .complete-icon { font-size: 44px; margin-bottom: 20px; }
   .complete-title {
     font-family: 'Cormorant Garamond', serif;
@@ -353,7 +407,7 @@
   <button class="back-btn" onclick="goBack('screen-main')"><span class="arrow">←</span> Back</button>
   <div class="brand">Y Y M M D D</div>
   <div class="question-header">
-    <div class="step-indicator">STEP 1 / 3</div>
+    <div class="step-indicator">STEP 1 / 4</div>
     <div class="question-text" id="q1-text"></div>
   </div>
   <div class="options-grid" id="q1-options"></div>
@@ -364,7 +418,7 @@
   <button class="back-btn" onclick="goBack('screen-q1')"><span class="arrow">←</span> Back</button>
   <div class="brand">Y Y M M D D</div>
   <div class="question-header">
-    <div class="step-indicator">STEP 2 / 3</div>
+    <div class="step-indicator">STEP 2 / 4</div>
     <div class="question-text" id="q2-text"></div>
   </div>
   <div class="options-grid" id="q2-options"></div>
@@ -375,10 +429,21 @@
   <button class="back-btn" onclick="goBack('screen-q2')"><span class="arrow">←</span> Back</button>
   <div class="brand">Y Y M M D D</div>
   <div class="question-header">
-    <div class="step-indicator">STEP 3 / 3</div>
+    <div class="step-indicator">STEP 3 / 4</div>
     <div class="question-text" id="q3-text"></div>
   </div>
   <div class="options-grid" id="q3-options"></div>
+</div>
+
+<!-- Q4 -->
+<div class="screen" id="screen-q4">
+  <button class="back-btn" onclick="goBack('screen-q3')"><span class="arrow">←</span> Back</button>
+  <div class="brand">Y Y M M D D</div>
+  <div class="question-header">
+    <div class="step-indicator">STEP 4 / 4</div>
+    <div class="question-text" id="q4-text"></div>
+  </div>
+  <div class="options-list" id="q4-options"></div>
 </div>
 
 <!-- 완료 -->
@@ -405,9 +470,8 @@ const content = {
     q1options: [
       { icon: "🚶", label: "지나가다 발견" },
       { icon: "📱", label: "인스타그램" },
-      { icon: "🔍", label: "구글 검색" },
-      { icon: "👥", label: "지인 추천" },
-      { icon: "🗺️", label: "네이버 검색", full: true }
+      { icon: "🔍", label: "인터넷 검색" },
+      { icon: "👥", label: "지인 추천" }
     ],
     q2: "누구와 함께 오셨나요?",
     q2options: [
@@ -423,6 +487,13 @@ const content = {
       { icon: "🌅", label: "마지막 날" },
       { icon: "📅", label: "그 외" }
     ],
+    q4: "다음에 출시되면<br>가장 갖고 싶은 제품은?",
+    q4options: [
+      { icon: "💨", label: "헤어미스트" },
+      { icon: "🏠", label: "공간 향", sub: "룸스프레이 · 인센스 · 향초" },
+      { icon: "💋", label: "립밤" },
+      { icon: "🕯️", label: "고체향수", sub: "솔리드 퍼퓸" }
+    ],
     complete: "참여해 주셔서<br>감사합니다",
     gift: "기프트백을 받아가세요",
     sub: "직원에게 이 화면을 보여주세요"
@@ -433,8 +504,7 @@ const content = {
       { icon: "🚶", label: "路过发现" },
       { icon: "📱", label: "小红书" },
       { icon: "🗺️", label: "大众点评" },
-      { icon: "👥", label: "朋友推荐" },
-      { icon: "🔍", label: "搜索", full: true }
+      { icon: "👥", label: "朋友推荐" }
     ],
     q2: "您和谁一起来的？",
     q2options: [
@@ -450,6 +520,13 @@ const content = {
       { icon: "🌅", label: "最后一天" },
       { icon: "📅", label: "其他" }
     ],
+    q4: "下次推出的新品中<br>您最想要哪一款？",
+    q4options: [
+      { icon: "💨", label: "发香喷雾" },
+      { icon: "🏠", label: "室内香氛", sub: "喷雾 · 线香 · 香薰蜡烛" },
+      { icon: "💋", label: "润唇膏" },
+      { icon: "🕯️", label: "固体香水" }
+    ],
     complete: "感谢您的参与",
     gift: "请领取您的礼品袋",
     sub: "请将此屏幕出示给店员"
@@ -460,8 +537,7 @@ const content = {
       { icon: "🚶", label: "路過發現" },
       { icon: "📱", label: "Instagram" },
       { icon: "🔍", label: "Google搜尋" },
-      { icon: "👥", label: "朋友推薦" },
-      { icon: "🗺️", label: "其他搜尋", full: true }
+      { icon: "👥", label: "朋友推薦" }
     ],
     q2: "您和誰一起來的？",
     q2options: [
@@ -477,6 +553,13 @@ const content = {
       { icon: "🌅", label: "最後一天" },
       { icon: "📅", label: "其他" }
     ],
+    q4: "下次推出的新品中<br>您最想要哪一款？",
+    q4options: [
+      { icon: "💨", label: "髮香噴霧" },
+      { icon: "🏠", label: "室內香氛", sub: "噴霧 · 線香 · 香氛蠟燭" },
+      { icon: "💋", label: "護唇膏" },
+      { icon: "🕯️", label: "固體香水" }
+    ],
     complete: "感謝您的參與",
     gift: "請領取您的禮品袋",
     sub: "請將此畫面出示給店員"
@@ -486,9 +569,8 @@ const content = {
     q1options: [
       { icon: "🚶", label: "通りがかり" },
       { icon: "📱", label: "Instagram" },
-      { icon: "🔍", label: "Google検索" },
-      { icon: "👥", label: "知人の紹介" },
-      { icon: "🗺️", label: "その他検索", full: true }
+      { icon: "🔍", label: "ネット検索" },
+      { icon: "👥", label: "知人の紹介" }
     ],
     q2: "誰と一緒に来ましたか？",
     q2options: [
@@ -504,6 +586,13 @@ const content = {
       { icon: "🌅", label: "最終日" },
       { icon: "📅", label: "その他" }
     ],
+    q4: "次に発売されたら<br>欲しい商品はどれですか？",
+    q4options: [
+      { icon: "💨", label: "ヘアミスト" },
+      { icon: "🏠", label: "空間の香り", sub: "スプレー · お香 · キャンドル" },
+      { icon: "💋", label: "リップバーム" },
+      { icon: "🕯️", label: "練り香水" }
+    ],
     complete: "ご参加<br>ありがとうございます",
     gift: "ギフトバッグをお受け取りください",
     sub: "このスクリーンをスタッフにお見せください"
@@ -513,9 +602,8 @@ const content = {
     q1options: [
       { icon: "🚶", label: "Walked by" },
       { icon: "📱", label: "Instagram" },
-      { icon: "🔍", label: "Google" },
-      { icon: "👥", label: "Recommendation" },
-      { icon: "🗺️", label: "Other search", full: true }
+      { icon: "🔍", label: "Web search" },
+      { icon: "👥", label: "Recommendation" }
     ],
     q2: "Who are you with?",
     q2options: [
@@ -531,6 +619,13 @@ const content = {
       { icon: "🌅", label: "Last day" },
       { icon: "📅", label: "Other" }
     ],
+    q4: "Which new product<br>would you want most?",
+    q4options: [
+      { icon: "💨", label: "Hair mist" },
+      { icon: "🏠", label: "Home fragrance", sub: "Room spray · Incense · Candle" },
+      { icon: "💋", label: "Lip balm" },
+      { icon: "🕯️", label: "Solid perfume" }
+    ],
     complete: "Thank you for<br>your participation",
     gift: "Please collect your gift bag",
     sub: "Show this screen to our staff"
@@ -541,7 +636,7 @@ let currentLang = 'ko';
 let rotateInterval = null;
 let currentIndex = 0;
 const TOTAL = 5;
-let answers = { lang: '', q1: '', q2: '', q3: '' };
+let answers = { lang: '', q1: '', q2: '', q3: '', q4: '' };
 
 function startRotation() {
   stopRotation();
@@ -571,7 +666,7 @@ const langLabels = {
 function setLang(lang) {
   stopRotation();
   currentLang = lang;
-  answers = { lang: langLabels[lang], q1: '', q2: '', q3: '' };
+  answers = { lang: langLabels[lang], q1: '', q2: '', q3: '', q4: '' };
 
   const fontMap = {
     'ko': "'Noto Sans KR', sans-serif",
@@ -596,6 +691,11 @@ function setLang(lang) {
   document.getElementById('q3-text').textContent = c.q3;
   buildOptions('q3-options', c.q3options, (val) => {
     answers.q3 = val;
+    showScreen('screen-q4');
+  });
+  document.getElementById('q4-text').innerHTML = c.q4;
+  buildList('q4-options', c.q4options, (val) => {
+    answers.q4 = val;
     document.getElementById('complete-title').innerHTML = c.complete;
     document.getElementById('complete-gift-text').textContent = c.gift;
     document.getElementById('complete-sub').textContent = c.sub;
@@ -613,6 +713,26 @@ function buildOptions(containerId, options, onSelect) {
     const btn = document.createElement('button');
     btn.className = 'option-btn' + (opt.full ? ' full-width' : '');
     btn.innerHTML = `<span class="icon">${opt.icon}</span>${opt.label}`;
+    btn.onclick = () => {
+      btn.classList.add('selected');
+      setTimeout(() => onSelect(opt.label), 300);
+    };
+    container.appendChild(btn);
+  });
+}
+
+function buildList(containerId, options, onSelect) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-row';
+    const subHtml = opt.sub ? `<span class="row-sub">${opt.sub}</span>` : '';
+    btn.innerHTML = `
+      <span class="row-num">${idx + 1}</span>
+      <span class="row-icon">${opt.icon}</span>
+      <span class="row-label">${opt.label}${subHtml}</span>
+    `;
     btn.onclick = () => {
       btn.classList.add('selected');
       setTimeout(() => onSelect(opt.label), 300);
